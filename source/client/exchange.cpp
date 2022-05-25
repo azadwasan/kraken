@@ -1,16 +1,16 @@
-#include "client/exchange.h"
+#include "client/Exchange.h"
 #include "common/config.h"
 #include "client/RequestFactory.h"
 
 using namespace exchangeClient;
 
-Exchange::Exchange():m_commChannel{*this}{}
+CExchange::CExchange():m_commChannel{*this}{}
 
-void Exchange::start(){
+void CExchange::start(){
     m_commChannel.start();
 }
 
-void Exchange::ExchangeUpdate(UpdateType update) {
+void CExchange::ExchangeUpdate(UpdateType update) {
     switch (update)
     {
     case UpdateType::Connect:

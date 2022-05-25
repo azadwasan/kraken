@@ -6,9 +6,9 @@
 #include "ExchangeUpdateListener.h"
 
 namespace exchangeClient{
-class Exchange:public IExchangeUpdateListener{
+class CExchange:public IExchangeUpdateListener{
 public:
-    Exchange();
+    CExchange();
     void start();
 
     void ExchangeUpdate(UpdateType) override;
