@@ -15,7 +15,7 @@
 
 //------------------------------------------------------------------------------
 //  The reference code was taken from the source as referenced above.
-//  It has been modified and extended to fit our needs.
+//  It has been substantially modified and extended to fit our needs.
 //
 //------------------------------------------------------------------------------
 
@@ -52,9 +52,10 @@ public:
     // Resolver and socket require an io_context
     explicit CWebSocketBoost(net::io_context&, ssl::context&, IExchangeUpdateListener&);
 
-    void start(const std::string&, const std::string&, const std::string&);
+    void connect(const std::string&, const std::string&, const std::string&);
     ws_status getStatus() {return m_status;}
     void sendRequest(const std::string&);
+    void readResponse(bool=false);
     void registerListener() {}
     void disconnect();
 
@@ -71,6 +72,7 @@ private:
 
     void write_cb(beast::error_code ec, std::size_t bytes_transferred);
 
+    void read_continous_cb(beast::error_code ec, std::size_t bytes_transferred);
     void read_cb(beast::error_code ec, std::size_t bytes_transferred);
 
     void close_cb(beast::error_code ec);
@@ -78,7 +80,7 @@ private:
 private:
     tcp::resolver m_resolver;
     websocket::stream<beast::ssl_stream<beast::tcp_stream>> m_ws;
-    beast::flat_buffer buffer_;
+    beast::flat_buffer m_buffer;
     std::string m_host{};
     std::string m_text{};
     ws_status m_status{ws_status::disconnected};

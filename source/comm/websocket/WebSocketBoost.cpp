@@ -1,4 +1,5 @@
 #include "comm/websocket/WebSocketBoost.h"
+#include "functional"
 
 using namespace exchangeClient;
 
@@ -17,7 +18,7 @@ void CWebSocketBoost::fail(beast::error_code ec, char const* what)
 }
 
 // Start the asynchronous operation
-void CWebSocketBoost::start(const std::string& host, const std::string& port, const std::string& text)
+void CWebSocketBoost::connect(const std::string& host, const std::string& port, const std::string& text)
 {
     // Save these for later
     m_host = host;
@@ -118,18 +119,11 @@ CWebSocketBoost::handshake_cb(beast::error_code ec)
     if(ec)
         return fail(ec, "handshake");
 
-    // Send the message
     m_updateListener.ExchangeUpdate(UpdateType::Connect);
-    // m_ws.async_write(
-    //     net::buffer(m_text),
-    //     beast::bind_front_handler(
-    //         &CWebSocketBoost::write_cb,
-    //         shared_from_this()));
 }
 
 void CWebSocketBoost::sendRequest(const std::string& request) {
     // Send the message
-//    std::cout << "CWebSocketBoost::sendRequest, request = " << request << std::endl;
     m_ws.async_write(
         net::buffer(request),
         beast::bind_front_handler(
@@ -145,13 +139,35 @@ void CWebSocketBoost::write_cb(beast::error_code ec, std::size_t bytes_transferr
     if(ec)
         return fail(ec, "write");
 
-    // Read a message into our buffer
+    m_updateListener.ExchangeUpdate(UpdateType::Request);
+}
+
+void CWebSocketBoost::readResponse(bool continous){
+    auto cb = continous?&CWebSocketBoost::read_continous_cb:&CWebSocketBoost::read_cb;
+
     m_ws.async_read(
-        buffer_,
+        m_buffer,
         beast::bind_front_handler(
-            &CWebSocketBoost::read_cb,
+            cb,
             shared_from_this()));
 }
+
+void CWebSocketBoost::read_continous_cb(beast::error_code ec, std::size_t bytes_transferred)
+{
+    boost::ignore_unused(bytes_transferred);
+
+    if(ec)
+        return fail(ec, "read");
+
+    std::cout << beast::make_printable(m_buffer.data()) << std::endl;
+    m_buffer.consume(m_buffer.size());
+    m_ws.async_read(
+        m_buffer,
+        beast::bind_front_handler(
+            &CWebSocketBoost::read_continous_cb,
+            shared_from_this()));
+}
+
 
 void CWebSocketBoost::read_cb(beast::error_code ec, std::size_t bytes_transferred)
 {
@@ -160,13 +176,9 @@ void CWebSocketBoost::read_cb(beast::error_code ec, std::size_t bytes_transferre
     if(ec)
         return fail(ec, "read");
 
-    std::cout << beast::make_printable(buffer_.data()) << std::endl;
-    buffer_.consume(buffer_.size());
-    m_ws.async_read(
-        buffer_,
-        beast::bind_front_handler(
-            &CWebSocketBoost::read_cb,
-            shared_from_this()));
+    std::cout << beast::make_printable(m_buffer.data()) << std::endl;
+    m_buffer.consume(m_buffer.size());
+    m_updateListener.ExchangeUpdate(UpdateType::Response);
 }
 
 void CWebSocketBoost::disconnect() {
@@ -185,6 +197,5 @@ void CWebSocketBoost::close_cb(beast::error_code ec)
     // If we get here then the connection is closed gracefully
     m_status= ws_status::disconnected;
 
-// The make_printable() function helps print a ConstBufferSequence
-//    std::cout << beast::make_printable(buffer_.data()) << std::endl;
+    m_updateListener.ExchangeUpdate(UpdateType::Disconnect);
 }

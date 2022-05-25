@@ -13,7 +13,7 @@ CCommWebSocket::CCommWebSocket(IExchangeUpdateListener& listener){
 
 void CCommWebSocket::start(){
     if(m_webSocketClient){
-        m_webSocketClient->start(config::EXCHANGE_URL, config::PORT, 
+        m_webSocketClient->connect(config::EXCHANGE_URL, config::PORT, 
             CRequestFactory::createRequestTick()
         );
     }
@@ -23,5 +23,11 @@ void CCommWebSocket::start(){
 void CCommWebSocket::sendRequest(const std::string& request){
     if(m_webSocketClient){
         m_webSocketClient->sendRequest(request);
+    }    
+}
+
+void CCommWebSocket::readResponse(bool continous){
+    if(m_webSocketClient){
+        m_webSocketClient->readResponse(continous);
     }    
 }

@@ -12,6 +12,7 @@ public:
     void start() override;
     ws_status getStatus() override{return ws_status::disconnected;}
     void sendRequest(const std::string&) override;
+    void readResponse(bool=false);
     void registerListener() override{}
     void disconnect() override{}
 
