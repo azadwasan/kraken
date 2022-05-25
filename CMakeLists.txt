@@ -13,7 +13,8 @@ add_executable(kraken_client
     main.cpp
 #    source/client/kraken.cpp
     source/client/exchange.cpp
-    source/websocket/ws_boost.cpp
+    source/comm/comm_ws.cpp
+    source/comm/websocket/ws_boost.cpp
 )
 
 # Make sure you link your targets with this command. It can also link libraries and

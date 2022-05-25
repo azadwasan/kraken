@@ -1,4 +1,4 @@
-#include "../../include/websocket/ws_boost.h"
+#include "../../../include/comm/websocket/ws_boost.h"
 
 using namespace exchange_client;
 
@@ -81,8 +81,7 @@ session::connect_cb(beast::error_code ec, tcp::resolver::results_type::endpoint_
             shared_from_this()));
 }
 
-void
-session::ssl_handshake_cb(beast::error_code ec)
+void session::ssl_handshake_cb(beast::error_code ec)
 {
     if(ec)
         return fail(ec, "ssl_handshake");
@@ -126,10 +125,17 @@ session::handshake_cb(beast::error_code ec)
             shared_from_this()));
 }
 
-void
-session::write_cb(
-    beast::error_code ec,
-    std::size_t bytes_transferred)
+void session::sendRequest(const std::string& request) {
+    // Send the message
+    m_ws.async_write(
+        net::buffer(request),
+        beast::bind_front_handler(
+            &session::write_cb,
+            shared_from_this()));
+}
+
+
+void session::write_cb(beast::error_code ec, std::size_t bytes_transferred)
 {
     boost::ignore_unused(bytes_transferred);
 
@@ -158,22 +164,24 @@ void session::read_cb(beast::error_code ec, std::size_t bytes_transferred)
         beast::bind_front_handler(
             &session::read_cb,
             shared_from_this()));
-
-    // Close the WebSocket connection
-    // ws_.async_close(websocket::close_code::normal,
-    //     beast::bind_front_handler(
-    //         &session::on_close,
-    //         shared_from_this()));
 }
 
-void
-session::close_cb(beast::error_code ec)
+void session::disconnect() {
+    //Close the WebSocket connection
+    m_ws.async_close(websocket::close_code::normal,
+        beast::bind_front_handler(
+            &session::close_cb,
+            shared_from_this()));
+}
+
+void session::close_cb(beast::error_code ec)
 {
     if(ec)
         return fail(ec, "close");
 
     // If we get here then the connection is closed gracefully
+    m_status= ws_status::disconnected;
 
-    // The make_printable() function helps print a ConstBufferSequence
-    std::cout << beast::make_printable(buffer_.data()) << std::endl;
+// The make_printable() function helps print a ConstBufferSequence
+//    std::cout << beast::make_printable(buffer_.data()) << std::endl;
 }
