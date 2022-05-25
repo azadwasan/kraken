@@ -14,6 +14,7 @@ enum class ws_status{
 };
 
 class ICommChannel{
+    virtual void start() = 0;
     virtual ws_status getStatus() = 0;
     virtual void sendRequest(const std::string&) = 0;
     virtual void registerListener() = 0;

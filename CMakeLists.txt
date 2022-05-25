@@ -8,10 +8,15 @@ project(
 
 set(CMAKE_CXX_STANDARD 17)
 
+INCLUDE_DIRECTORIES(
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
 # Adding something we can run - Output name matches target name
 add_executable(kraken_client 
     main.cpp
 #    source/client/kraken.cpp
+    source/client/RequestFactory.cpp
     source/client/exchange.cpp
     source/comm/CommWebSocket.cpp
     source/comm/websocket/WebSocketBoost.cpp

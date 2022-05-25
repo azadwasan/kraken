@@ -19,8 +19,8 @@
 //
 //------------------------------------------------------------------------------
 
-#ifndef WS_BOOST_H_
-#define WS_BOOST_H_
+#ifndef WEBSOCKETBOOST_H_
+#define WEBSOCKETBOOST_H_
 
 #include "../../common/root_certificates.hpp"
 #include <boost/beast/core.hpp>
@@ -45,11 +45,11 @@ using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 
 namespace exchangeClient{
 // Sends a WebSocket message and prints the response
-class WebSocketBoost : public std::enable_shared_from_this<WebSocketBoost>
+class CWebSocketBoost : public std::enable_shared_from_this<CWebSocketBoost>
 {
 public:
     // Resolver and socket require an io_context
-    explicit WebSocketBoost(net::io_context&, ssl::context&);
+    explicit CWebSocketBoost(net::io_context&, ssl::context&);
 
     void start(const std::string&, const std::string&, const std::string&);
     ws_status getStatus() {return m_status;}
@@ -82,9 +82,10 @@ private:
     std::string m_text{};
     ws_status m_status{ws_status::disconnected};
 
+    //These are Boost specific configurations, hence we wouldn't move them to the global configuration object.
     static constexpr uint8_t TIMEOUT = 30;
     static constexpr const char* VERSION_STRING = "EXCHANGE_CLIENT";
 };
 }
 
-#endif /* WS_BOOST_H_ */
+#endif /* WEBSOCKETBOOST_H_ */

@@ -1,5 +1,5 @@
-#ifndef COMM_WS_H_
-#define COMM_WS_H_
+#ifndef COMMONWEBSOCKET_H_
+#define COMMONWEBSOCKET_H_
 
 #include "comm.h"
 #include "../comm/websocket/WebSocketBoost.h"
@@ -8,7 +8,7 @@ namespace exchangeClient{
 class CCommWebSocket: public ICommChannel{
 public:
     CCommWebSocket();
-    void start();
+    void start() override;
     ws_status getStatus() override{return ws_status::disconnected;}
     void sendRequest(const std::string&) override{}
     void registerListener() override{}
@@ -19,7 +19,8 @@ private:
     net::io_context ioc;
     // The SSL context is required, and holds certificates
     ssl::context ctx{ssl::context::tlsv12_client};
+    std::shared_ptr<CWebSocketBoost> m_webSocketClient{};
 };
 }
 
-#endif /* COMM_WS_H_*/
+#endif /* COMMONWEBSOCKET_H_ */

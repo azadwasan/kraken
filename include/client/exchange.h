@@ -8,6 +8,7 @@ namespace exchangeClient{
 class Exchange{
 public:
     void start();
+    
 private:
     CCommWebSocket m_commChannel{};
 };

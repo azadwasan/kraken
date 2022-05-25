@@ -1,32 +1,21 @@
-#include "../../include/comm/CommWebSocket.h"
-#include "../../include/common/config.h"
+#include "comm/CommWebSocket.h"
+#include "common/config.h"
+#include "client/RequestFactory.h"
 
 using namespace exchangeClient;
 
 CCommWebSocket::CCommWebSocket(){
     load_root_certificates(ctx); 
+
+    m_webSocketClient = std::make_shared<CWebSocketBoost>(ioc, ctx);
 }
 
 
 void CCommWebSocket::start(){
-    std::string tick_request{        R"({
-        "event": "subscribe",
-        "pair": [
-            "XBT/USD",
-            "XBT/EUR"
-        ],
-        "subscription": {
-            "name": "ticker"
-        }
-        })"
-    };
-    // This holds the root certificate used for verification
-    std::make_shared<WebSocketBoost>(ioc, ctx)->start(config::EXCHANGE_URL, config::PORT, 
-        tick_request.c_str()
+    m_webSocketClient->start(config::EXCHANGE_URL, config::PORT, 
+        CRequestFactory::createRequestTick()
     );
 
-    // Run the I/O service. The call will return when
-    // the socket is closed.
     ioc.run();
 
 }
