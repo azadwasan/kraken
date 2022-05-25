@@ -2,9 +2,10 @@
 
 using namespace exchangeClient;
 
-CWebSocketBoost::CWebSocketBoost(net::io_context& ioc, ssl::context& ctx)
+CWebSocketBoost::CWebSocketBoost(net::io_context& ioc, ssl::context& ctx, IExchangeUpdateListener& listener)
         : m_resolver(net::make_strand(ioc))
         , m_ws(net::make_strand(ioc), ctx)
+        , m_updateListener{listener}
 {
 }
 
@@ -118,15 +119,17 @@ CWebSocketBoost::handshake_cb(beast::error_code ec)
         return fail(ec, "handshake");
 
     // Send the message
-    m_ws.async_write(
-        net::buffer(m_text),
-        beast::bind_front_handler(
-            &CWebSocketBoost::write_cb,
-            shared_from_this()));
+    m_updateListener.ExchangeUpdate(UpdateType::Connect);
+    // m_ws.async_write(
+    //     net::buffer(m_text),
+    //     beast::bind_front_handler(
+    //         &CWebSocketBoost::write_cb,
+    //         shared_from_this()));
 }
 
 void CWebSocketBoost::sendRequest(const std::string& request) {
     // Send the message
+//    std::cout << "CWebSocketBoost::sendRequest, request = " << request << std::endl;
     m_ws.async_write(
         net::buffer(request),
         beast::bind_front_handler(

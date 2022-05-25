@@ -14,10 +14,10 @@ enum class Ticks{
 namespace exchangeClient{
 class CRequestFactory{
 public:
-    static std::string createRequestTick(Ticks=Ticks::R_10);
+    static std::string createRequestTick(Ticks=Ticks::R_10) noexcept;
 
 private:
-    static const char * toString(Ticks tick);
+    constexpr static const char * toString(Ticks tick) noexcept;
 };
 }
 

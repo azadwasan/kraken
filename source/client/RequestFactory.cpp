@@ -3,7 +3,7 @@
 
 using namespace exchangeClient;
 
-std::string CRequestFactory::createRequestTick(Ticks tick){
+std::string CRequestFactory::createRequestTick(Ticks tick) noexcept{
     return 
      R"({
         "event": "subscribe",
@@ -32,7 +32,7 @@ std::string CRequestFactory::createRequestTick(Ticks tick){
 }
 
 
-const char* CRequestFactory::toString(Ticks tick){
+constexpr const char* CRequestFactory::toString(Ticks tick) noexcept{
     switch (tick)
     {
     case Ticks::R_10:

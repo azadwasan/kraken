@@ -5,12 +5,13 @@
 #include "../comm/websocket/WebSocketBoost.h"
 
 namespace exchangeClient{
+class IExchangeUpdateListener;
 class CCommWebSocket: public ICommChannel{
 public:
-    CCommWebSocket();
+    CCommWebSocket(IExchangeUpdateListener&);
     void start() override;
     ws_status getStatus() override{return ws_status::disconnected;}
-    void sendRequest(const std::string&) override{}
+    void sendRequest(const std::string&) override;
     void registerListener() override{}
     void disconnect() override{}
 
