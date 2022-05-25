@@ -5,7 +5,7 @@
 
 #include <string>
 
-namespace exchange_client{
+namespace exchangeClient{
 
 enum class ws_status{
     disconnected,

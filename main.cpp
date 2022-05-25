@@ -2,6 +2,6 @@
 
 int main(int argc, char** argv)
 {
-    exchange_client::Exchange{}.start();
+    exchangeClient::Exchange{}.start();
     return EXIT_SUCCESS;
 }

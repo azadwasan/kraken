@@ -2,9 +2,9 @@
 #define COMM_WS_H_
 
 #include "comm.h"
-#include "../comm/websocket/ws_boost.h"
+#include "../comm/websocket/WebSocketBoost.h"
 
-namespace exchange_client{
+namespace exchangeClient{
 class CCommWebSocket: public ICommChannel{
 public:
     CCommWebSocket();

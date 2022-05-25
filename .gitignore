@@ -35,3 +35,5 @@ build/CMakeFiles/kraken_client.dir/source/client/exchange.cpp.o
 build/kraken_client
 build/CMakeFiles/kraken_client.dir/source/comm/comm_ws.cpp.o
 build/CMakeFiles/kraken_client.dir/source/comm/websocket/ws_boost.cpp.o
+build/CMakeFiles/kraken_client.dir/source/comm/CommWebSocket.cpp.o
+build/CMakeFiles/kraken_client.dir/source/comm/websocket/WebSocketBoost.cpp.o

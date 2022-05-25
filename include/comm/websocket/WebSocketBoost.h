@@ -43,13 +43,13 @@ using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 
 //------------------------------------------------------------------------------
 
-namespace exchange_client{
+namespace exchangeClient{
 // Sends a WebSocket message and prints the response
-class session : public std::enable_shared_from_this<session>
+class WebSocketBoost : public std::enable_shared_from_this<WebSocketBoost>
 {
 public:
     // Resolver and socket require an io_context
-    explicit session(net::io_context&, ssl::context&);
+    explicit WebSocketBoost(net::io_context&, ssl::context&);
 
     void start(const std::string&, const std::string&, const std::string&);
     ws_status getStatus() {return m_status;}

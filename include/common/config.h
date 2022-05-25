@@ -1,7 +1,7 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
-namespace exchange_client{
+namespace exchangeClient{
     namespace config{
         constexpr const char* EXCHANGE_URL = "ws.kraken.com";
         constexpr const char* PORT = "443";

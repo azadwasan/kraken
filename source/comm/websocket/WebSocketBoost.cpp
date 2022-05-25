@@ -1,22 +1,22 @@
-#include "../../../include/comm/websocket/ws_boost.h"
+#include "../../../include/comm/websocket/WebSocketBoost.h"
 
-using namespace exchange_client;
+using namespace exchangeClient;
 
-session::session(net::io_context& ioc, ssl::context& ctx)
+WebSocketBoost::WebSocketBoost(net::io_context& ioc, ssl::context& ctx)
         : m_resolver(net::make_strand(ioc))
         , m_ws(net::make_strand(ioc), ctx)
 {
 }
 
 // Report a failure
-void session::fail(beast::error_code ec, char const* what)
+void WebSocketBoost::fail(beast::error_code ec, char const* what)
 {
     m_status = ws_status::error;
     std::cerr << what << ": " << ec.message() << "\n";
 }
 
 // Start the asynchronous operation
-void session::start(const std::string& host, const std::string& port, const std::string& text)
+void WebSocketBoost::start(const std::string& host, const std::string& port, const std::string& text)
 {
     // Save these for later
     m_host = host;
@@ -27,11 +27,11 @@ void session::start(const std::string& host, const std::string& port, const std:
         host,
         port,
         beast::bind_front_handler(
-            &session::resolve_cb,
+            &WebSocketBoost::resolve_cb,
             shared_from_this()));
 }
 
-void session::resolve_cb(
+void WebSocketBoost::resolve_cb(
     beast::error_code ec,
     tcp::resolver::results_type results)
 {
@@ -45,12 +45,12 @@ void session::resolve_cb(
     beast::get_lowest_layer(m_ws).async_connect(
         results,
         beast::bind_front_handler(
-            &session::connect_cb,
+            &WebSocketBoost::connect_cb,
             shared_from_this()));
 }
 
 void
-session::connect_cb(beast::error_code ec, tcp::resolver::results_type::endpoint_type ep)
+WebSocketBoost::connect_cb(beast::error_code ec, tcp::resolver::results_type::endpoint_type ep)
 {
     if(ec)
         return fail(ec, "connect");
@@ -77,11 +77,11 @@ session::connect_cb(beast::error_code ec, tcp::resolver::results_type::endpoint_
     m_ws.next_layer().async_handshake(
         ssl::stream_base::client,
         beast::bind_front_handler(
-            &session::ssl_handshake_cb,
+            &WebSocketBoost::ssl_handshake_cb,
             shared_from_this()));
 }
 
-void session::ssl_handshake_cb(beast::error_code ec)
+void WebSocketBoost::ssl_handshake_cb(beast::error_code ec)
 {
     if(ec)
         return fail(ec, "ssl_handshake");
@@ -107,12 +107,12 @@ void session::ssl_handshake_cb(beast::error_code ec)
     // Perform the websocket handshake
     m_ws.async_handshake(m_host, "/",
         beast::bind_front_handler(
-            &session::handshake_cb,
+            &WebSocketBoost::handshake_cb,
             shared_from_this()));
 }
 
 void
-session::handshake_cb(beast::error_code ec)
+WebSocketBoost::handshake_cb(beast::error_code ec)
 {
     if(ec)
         return fail(ec, "handshake");
@@ -121,21 +121,21 @@ session::handshake_cb(beast::error_code ec)
     m_ws.async_write(
         net::buffer(m_text),
         beast::bind_front_handler(
-            &session::write_cb,
+            &WebSocketBoost::write_cb,
             shared_from_this()));
 }
 
-void session::sendRequest(const std::string& request) {
+void WebSocketBoost::sendRequest(const std::string& request) {
     // Send the message
     m_ws.async_write(
         net::buffer(request),
         beast::bind_front_handler(
-            &session::write_cb,
+            &WebSocketBoost::write_cb,
             shared_from_this()));
 }
 
 
-void session::write_cb(beast::error_code ec, std::size_t bytes_transferred)
+void WebSocketBoost::write_cb(beast::error_code ec, std::size_t bytes_transferred)
 {
     boost::ignore_unused(bytes_transferred);
 
@@ -146,11 +146,11 @@ void session::write_cb(beast::error_code ec, std::size_t bytes_transferred)
     m_ws.async_read(
         buffer_,
         beast::bind_front_handler(
-            &session::read_cb,
+            &WebSocketBoost::read_cb,
             shared_from_this()));
 }
 
-void session::read_cb(beast::error_code ec, std::size_t bytes_transferred)
+void WebSocketBoost::read_cb(beast::error_code ec, std::size_t bytes_transferred)
 {
     boost::ignore_unused(bytes_transferred);
 
@@ -162,19 +162,19 @@ void session::read_cb(beast::error_code ec, std::size_t bytes_transferred)
     m_ws.async_read(
         buffer_,
         beast::bind_front_handler(
-            &session::read_cb,
+            &WebSocketBoost::read_cb,
             shared_from_this()));
 }
 
-void session::disconnect() {
+void WebSocketBoost::disconnect() {
     //Close the WebSocket connection
     m_ws.async_close(websocket::close_code::normal,
         beast::bind_front_handler(
-            &session::close_cb,
+            &WebSocketBoost::close_cb,
             shared_from_this()));
 }
 
-void session::close_cb(beast::error_code ec)
+void WebSocketBoost::close_cb(beast::error_code ec)
 {
     if(ec)
         return fail(ec, "close");

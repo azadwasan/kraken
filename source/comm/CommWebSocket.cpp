@@ -1,7 +1,7 @@
-#include "../../include/comm/comm_ws.h"
+#include "../../include/comm/CommWebSocket.h"
 #include "../../include/common/config.h"
 
-using namespace exchange_client;
+using namespace exchangeClient;
 
 CCommWebSocket::CCommWebSocket(){
     load_root_certificates(ctx); 
@@ -21,7 +21,7 @@ void CCommWebSocket::start(){
         })"
     };
     // This holds the root certificate used for verification
-    std::make_shared<session>(ioc, ctx)->start(config::EXCHANGE_URL, config::PORT, 
+    std::make_shared<WebSocketBoost>(ioc, ctx)->start(config::EXCHANGE_URL, config::PORT, 
         tick_request.c_str()
     );
 

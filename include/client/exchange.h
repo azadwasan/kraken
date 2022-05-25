@@ -2,9 +2,9 @@
 #ifndef EXCHANGE_H_
 #define EXCHANGE_H_
 
-#include "../comm/comm_ws.h"
+#include "../comm/CommWebSocket.h"
 
-namespace exchange_client{
+namespace exchangeClient{
 class Exchange{
 public:
     void start();
