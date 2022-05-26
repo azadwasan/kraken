@@ -13,7 +13,7 @@ CCommWebSocket::CCommWebSocket(IExchangeUpdateListener& updateListener, IExchang
 
 void CCommWebSocket::start(){
     if(m_webSocketClient){
-        m_webSocketClient->connect(std::string{config::EXCHANGE_URL}+config::APP_ID, config::PORT, config::EXCHANGE_TARGET);
+        m_webSocketClient->connect(config::EXCHANGE_URL, config::PORT, std::string{config::EXCHANGE_TARGET}+config::APP_ID);
     }
     ioc.run();
 }
