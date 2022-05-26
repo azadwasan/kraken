@@ -33,7 +33,6 @@
 #include <memory>
 #include <iostream>
 #include "../comm.h"
-#include "client/ExchangeUpdateListener.h"
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace http = beast::http;           // from <boost/beast/http.hpp>
@@ -46,11 +45,12 @@ using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 
 namespace exchangeClient{
 class IExchangeUpdateListener;
+class IExchangeFeedListener;
 class CWebSocketBoost : public std::enable_shared_from_this<CWebSocketBoost>
 {
 public:
     // Resolver and socket require an io_context
-    explicit CWebSocketBoost(net::io_context&, ssl::context&, IExchangeUpdateListener&);
+    explicit CWebSocketBoost(net::io_context&, ssl::context&, IExchangeUpdateListener&, IExchangeFeedListener&);
 
     void connect(const std::string&, const std::string&, const std::string&);
     ws_status getStatus() {return m_status;}
@@ -82,10 +82,11 @@ private:
     websocket::stream<beast::ssl_stream<beast::tcp_stream>> m_ws;
     beast::flat_buffer m_buffer;
     std::string m_host{};
-    std::string m_text{};
+    std::string m_target{};
     ws_status m_status{ws_status::disconnected};
 
     IExchangeUpdateListener& m_updateListener;
+    IExchangeFeedListener& m_feedListener;
 
     //These are Boost specific configurations, hence we wouldn't move them to the global configuration object.
     static constexpr uint8_t TIMEOUT = 30;

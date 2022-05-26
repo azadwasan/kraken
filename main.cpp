@@ -1,7 +1,7 @@
-#include "include/client/Exchange.h"
+#include "include/client/ExchangeClient.h"
 
 int main(int argc, char** argv)
 {
-    exchangeClient::CExchange{}.start();
+    exchangeClient::CExchangeClient{}.start();
     return EXIT_SUCCESS;
 }

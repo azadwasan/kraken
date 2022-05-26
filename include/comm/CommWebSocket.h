@@ -6,9 +6,10 @@
 
 namespace exchangeClient{
 class IExchangeUpdateListener;
+class IExchangeFeedListener;
 class CCommWebSocket: public ICommChannel{
 public:
-    CCommWebSocket(IExchangeUpdateListener&);
+    CCommWebSocket(IExchangeUpdateListener&, IExchangeFeedListener&);
     void start() override;
     ws_status getStatus() override{return ws_status::disconnected;}
     void sendRequest(const std::string&) override;

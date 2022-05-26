@@ -10,12 +10,13 @@ INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-add_executable(kraken_client 
+add_executable(deriv_client 
     main.cpp
     source/client/RequestFactory.cpp
-    source/client/exchange.cpp
+    source/client/ExchangeClient.cpp
+    source/feeddelayer/FeedDelayer.cpp
     source/comm/CommWebSocket.cpp
     source/comm/websocket/WebSocketBoost.cpp
 )
 
-target_link_libraries(kraken_client PRIVATE boost_system ssl crypto)
+target_link_libraries(deriv_client PRIVATE boost_system ssl crypto)

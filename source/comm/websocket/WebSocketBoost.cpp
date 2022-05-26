@@ -1,12 +1,15 @@
+#include <functional>
 #include "comm/websocket/WebSocketBoost.h"
-#include "functional"
+#include "client/ExchangeUpdateListener.h"
+#include "client/ExchangeFeedListener.h"
 
 using namespace exchangeClient;
 
-CWebSocketBoost::CWebSocketBoost(net::io_context& ioc, ssl::context& ctx, IExchangeUpdateListener& listener)
+CWebSocketBoost::CWebSocketBoost(net::io_context& ioc, ssl::context& ctx, IExchangeUpdateListener& updateListener, IExchangeFeedListener& feedListener)
         : m_resolver(net::make_strand(ioc))
         , m_ws(net::make_strand(ioc), ctx)
-        , m_updateListener{listener}
+        , m_updateListener{updateListener}
+        , m_feedListener{feedListener}
 {
 }
 
@@ -15,14 +18,15 @@ void CWebSocketBoost::fail(beast::error_code ec, char const* what)
 {
     m_status = ws_status::error;
     std::cerr << what << ": " << ec.message() << "\n";
+    throw std::runtime_error(what);
 }
 
 // Start the asynchronous operation
-void CWebSocketBoost::connect(const std::string& host, const std::string& port, const std::string& text)
+void CWebSocketBoost::connect(const std::string& host, const std::string& port, const std::string& target)
 {
     // Save these for later
     m_host = host;
-    m_text = text;
+    m_target = target;
 
     // Look up the domain name
     m_resolver.async_resolve(
@@ -51,8 +55,7 @@ void CWebSocketBoost::resolve_cb(
             shared_from_this()));
 }
 
-void
-CWebSocketBoost::connect_cb(beast::error_code ec, tcp::resolver::results_type::endpoint_type ep)
+void CWebSocketBoost::connect_cb(beast::error_code ec, tcp::resolver::results_type::endpoint_type ep)
 {
     if(ec)
         return fail(ec, "connect");
@@ -107,7 +110,7 @@ void CWebSocketBoost::ssl_handshake_cb(beast::error_code ec)
         }));
 
     // Perform the websocket handshake
-    m_ws.async_handshake(m_host, "/",
+    m_ws.async_handshake(m_host, m_target,
         beast::bind_front_handler(
             &CWebSocketBoost::handshake_cb,
             shared_from_this()));
@@ -123,7 +126,6 @@ CWebSocketBoost::handshake_cb(beast::error_code ec)
 }
 
 void CWebSocketBoost::sendRequest(const std::string& request) {
-    // Send the message
     m_ws.async_write(
         net::buffer(request),
         beast::bind_front_handler(
@@ -159,7 +161,10 @@ void CWebSocketBoost::read_continous_cb(beast::error_code ec, std::size_t bytes_
     if(ec)
         return fail(ec, "read");
 
-    std::cout << beast::make_printable(m_buffer.data()) << std::endl;
+    //std::cout << beast::make_printable(m_buffer.data()) << std::endl;
+    std::stringstream ss;
+    ss << beast::make_printable(m_buffer.data());
+    m_feedListener.FeedUpdate(ss.str());
     m_buffer.consume(m_buffer.size());
     m_ws.async_read(
         m_buffer,

@@ -4,33 +4,8 @@
 using namespace exchangeClient;
 
 std::string CRequestFactory::createRequestTick(Ticks tick) noexcept{
-    return 
-     R"({
-        "event": "subscribe",
-        "pair": [
-            "XBT/USD",
-            "XBT/EUR"
-        ],
-        "subscription": {
-            "name": "ticker"
-        }
-        })";
-
-/*
-    ss <<
-    R"(
-        {
-            "ticks": "
-    )"
-    << toString(tick) <<
-    R"(",
-            "subscribe": 1
-        })"
-    ;
-
-    return ss.str();*/
+    return std::string{R"({ "ticks": ")"} + toString(tick) + R"("})";
 }
-
 
 constexpr const char* CRequestFactory::toString(Ticks tick) noexcept{
     switch (tick)
