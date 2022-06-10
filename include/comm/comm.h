@@ -7,7 +7,7 @@
 
 namespace exchangeClient{
 
-enum class ws_status{
+enum class WebsocketStatus{
     disconnected,
     connected,
     error
@@ -15,7 +15,7 @@ enum class ws_status{
 
 class ICommChannel{
     virtual void start() = 0;
-    virtual ws_status getStatus() = 0;
+    virtual WebsocketStatus getStatus() = 0;
     virtual void sendRequest(const std::string&) = 0;
     virtual void registerListener() = 0;
     virtual void disconnect() = 0;

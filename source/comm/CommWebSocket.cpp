@@ -1,8 +1,6 @@
 #include "comm/CommWebSocket.h"
 #include "common/config.h"
 #include "client/RequestFactory.h"
-#include "client/ExchangeUpdateListener.h"
-#include "client/ExchangeFeedListener.h" //TODO: Is this needed?
 
 using namespace exchangeClient;
 
@@ -18,6 +16,14 @@ void CCommWebSocket::start(){
     ioc.run();
 }
 
+WebsocketStatus CCommWebSocket::getStatus(){
+    if(m_webSocketClient){
+        return m_webSocketClient->getStatus();
+    }
+    return WebsocketStatus::disconnected;
+}
+
+
 void CCommWebSocket::sendRequest(const std::string& request){
     if(m_webSocketClient){
         m_webSocketClient->sendRequest(request);
@@ -27,5 +33,11 @@ void CCommWebSocket::sendRequest(const std::string& request){
 void CCommWebSocket::readResponse(bool continous){
     if(m_webSocketClient){
         m_webSocketClient->readResponse(continous);
+    }    
+}
+
+void CCommWebSocket::disconnect(){
+    if(m_webSocketClient){
+        m_webSocketClient->disconnect();;
     }    
 }

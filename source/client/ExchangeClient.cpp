@@ -24,7 +24,7 @@ void CExchangeClient::ExchangeUpdate(UpdateType update) {
     switch (update)
     {
     case UpdateType::Connect:
-        m_commChannel.sendRequest(CRequestFactory::createRequestTick());
+        m_commChannel.sendRequest(CRequestFactory::createRequestTick(Ticks::R_50));
         break;
     case UpdateType::Disconnect:
         /* HMI client can call this to disconnect the client */

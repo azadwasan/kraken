@@ -7,6 +7,12 @@
 #include "feeddelayer/FeedDelayer.h"
 #include "feeddelayer/DelayedFeedListener.h"
 
+/*
+    This class serves as the central controller, hence holds both the communication channel interface and the feed delayer.
+    It also serves to control the communication with the online exchange
+    and as a listener of the updates from the feed delayer and accordingly prints the output.
+*/
+
 namespace exchangeClient{
 class CExchangeClient:public IExchangeUpdateListener, IDelayedFeedistener{
 public:

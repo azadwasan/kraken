@@ -53,10 +53,10 @@ public:
     explicit CWebSocketBoost(net::io_context&, ssl::context&, IExchangeUpdateListener&, IExchangeFeedListener&);
 
     void connect(const std::string&, const std::string&, const std::string&);
-    ws_status getStatus() {return m_status;}
+    WebsocketStatus getStatus() {return m_status;}
     void sendRequest(const std::string&);
     void readResponse(bool=false);
-    void registerListener() {}
+    void registerListener() {}//This is the generic interface for extension to allow multiple listeners to be registered.
     void disconnect();
 
 private:
@@ -83,7 +83,7 @@ private:
     beast::flat_buffer m_buffer;
     std::string m_host{};
     std::string m_target{};
-    ws_status m_status{ws_status::disconnected};
+    WebsocketStatus m_status{WebsocketStatus::disconnected};
 
     IExchangeUpdateListener& m_updateListener;
     IExchangeFeedListener& m_feedListener;

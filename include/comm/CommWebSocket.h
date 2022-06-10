@@ -4,6 +4,11 @@
 #include "comm.h"
 #include "../comm/websocket/WebSocketBoost.h"
 
+/*
+    This class serves as an abstraction layer over the Boost Websocket interface.
+    The same interface can be implemented by any other class to provide abstraction for some other library.
+    Its role is to enable communication with the Boost websocket library.
+*/
 namespace exchangeClient{
 class IExchangeUpdateListener;
 class IExchangeFeedListener;
@@ -11,11 +16,11 @@ class CCommWebSocket: public ICommChannel{
 public:
     CCommWebSocket(IExchangeUpdateListener&, IExchangeFeedListener&);
     void start() override;
-    ws_status getStatus() override{return ws_status::disconnected;}
+    WebsocketStatus getStatus() override;
     void sendRequest(const std::string&) override;
     void readResponse(bool=false);
-    void registerListener() override{}
-    void disconnect() override{}
+    void registerListener() override{} //This is the generic interface for extension to allow multiple listeners to be registered.
+    void disconnect() override;
 
 private:
     // The io_context is required for all I/O

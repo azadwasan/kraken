@@ -16,7 +16,7 @@ CWebSocketBoost::CWebSocketBoost(net::io_context& ioc, ssl::context& ctx, IExcha
 // Report a failure
 void CWebSocketBoost::fail(beast::error_code ec, char const* what)
 {
-    m_status = ws_status::error;
+    m_status = WebsocketStatus::error;
     std::cerr << what << ": " << ec.message() << "\n";
     throw std::runtime_error(what);
 }
@@ -161,7 +161,6 @@ void CWebSocketBoost::read_continous_cb(beast::error_code ec, std::size_t bytes_
     if(ec)
         return fail(ec, "read");
 
-    //std::cout << beast::make_printable(m_buffer.data()) << std::endl;
     std::stringstream ss;
     ss << beast::make_printable(m_buffer.data());
     m_feedListener.FeedUpdate(ss.str());
@@ -200,7 +199,7 @@ void CWebSocketBoost::close_cb(beast::error_code ec)
         return fail(ec, "close");
 
     // If we get here then the connection is closed gracefully
-    m_status= ws_status::disconnected;
+    m_status= WebsocketStatus::disconnected;
 
     m_updateListener.ExchangeUpdate(UpdateType::Disconnect);
 }
