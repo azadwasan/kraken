@@ -1,5 +1,5 @@
 ## Design
-The objective of this application is to design a feed delayer, i.e., the feed must be delayed by a certain amount of time before being reported to the client.
+The objective of this application is to design a feed delayer for online trading exchange like Kraken and Deriv, i.e., the feed must be delayed by a certain amount of time before being reported to the client.
 ### Solving the core problem
 The problem statement looks very simple on surface, however, it has lots of quirks that need to be considered to solve this problem correctly.
 
